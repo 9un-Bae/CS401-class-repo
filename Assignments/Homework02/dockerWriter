@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM python3.12
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git vim
 
@@ -7,7 +7,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
     && apt-get install -y python3.12 \
     && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3.12 get-pip.py
 
-RUN pip install names
+RUN pip3.12 install numpy
 
 COPY writer.py /code/writer.py
 
@@ -15,4 +15,4 @@ RUN chmod +rx /code/writer.py
 
 ENV PATH="/code:$PATH"
 
-CMD ["python3.12", "writer.py"]
+# CMD ["python3.12", "/code/writer.py", "/data/data.txt"]
