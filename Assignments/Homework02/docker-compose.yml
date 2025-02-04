@@ -5,32 +5,27 @@ services:
   writer:
     build:
       context: .
-      dockerfile: dockerWriter
+      dockerfile: ./dockerWriter
     volumes:
-      - data:/data
-    command: ["writer.py", "/data/data.txt"]
+      - ./data:/data
 
   computer:
     build:
       context: .
-      dockerfile: dockerComputer
+      dockerfile: ./dockerComputer
     depends_on:
       - writer
     volumes:
-      - data:/data
-    command: ["python3.12", "/code/computer.py", "/data/data.txt", "/data/results.txt"]
+      - ./data:/data
 
-  #webserver:
-  #  build:
-  #    context: .
-  #    dockerfile: dockerHTML
-  #  depends_on:
-  #    - computer
-  #  volumes:
-  #    - data:/data
-  #  ports:
-  #    - "8000:8000"
-  #  command: ["python3.12", "-m", "webserver.py", "EXPOSE 8000"]
-
-volumes:
-  data:
+  webserver:
+    build:
+      context: .
+      dockerfile: ./dockerHTML
+    depends_on:
+      - computer
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    command: [bash -c "cp /data/results.txt /usr/share/nginx/html/ && python3.12 -m http.server 8000 --directory /usr/share/nginx/html"]
