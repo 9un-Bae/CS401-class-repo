@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.12
 
 '''
 Matrix Vector writer for CS 401
@@ -11,7 +11,6 @@ import sys
 
 # outside import
 import numpy as np
-
 
 def write_matrix_and_vector(filename):
     '''

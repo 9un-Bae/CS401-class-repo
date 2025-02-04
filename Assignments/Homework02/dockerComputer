@@ -1,0 +1,17 @@
+FROM python:3.12
+
+RUN pip install numpy
+
+COPY computer.py /code/computer.py
+
+RUN chmod +rx /code/computer.py
+
+ENV PATH="/code:$PATH"
+
+CMD ["python3", "/code/computer.py", "/data/data.txt", "/data/results.txt"]
+# computer.py data/data.txt data/results.txt
+
+# cmd to read and cmd to write, path
+# line 7
+
+# run tests - data/results.txt

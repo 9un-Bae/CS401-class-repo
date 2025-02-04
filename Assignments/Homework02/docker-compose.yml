@@ -1,0 +1,31 @@
+---
+
+services:
+
+  writer:
+    build:
+      context: .
+      dockerfile: ./dockerWriter
+    volumes:
+      - ./data:/data
+
+  computer:
+    build:
+      context: .
+      dockerfile: ./dockerComputer
+    depends_on:
+      - writer
+    volumes:
+      - ./data:/data
+
+  webserver:
+    build:
+      context: .
+      dockerfile: ./dockerHTML
+    depends_on:
+      - computer
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    command: [bash -c "cp /data/results.txt /usr/share/nginx/html/ && python3.12 -m http.server 8000 --directory /usr/share/nginx/html"]

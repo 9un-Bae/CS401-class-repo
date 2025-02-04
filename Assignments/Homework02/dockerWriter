@@ -1,0 +1,11 @@
+FROM python:3.12
+
+RUN pip install numpy
+
+COPY writer.py /code/writer.py
+
+RUN chmod +rx /code/writer.py
+
+ENV PATH="/code:$PATH"
+
+CMD ["python3", "/code/writer.py", "/data/data.txt"]
