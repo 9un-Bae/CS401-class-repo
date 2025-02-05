@@ -4,15 +4,17 @@ RUN pip install flask
 
 WORKDIR /code
 
-COPY contact.html /code/
-COPY index.html /code/
-COPY tests.html /code/
+COPY contact.html /code/index.html
+COPY index.html /code/contacts.html
+COPY tests.html /code/tests.html
 
-COPY computer.py /code/
-COPY writer.py /code/
+RUN chmod +rx /code/index.html
+RUN chmod +rx /code/contacts.html
+RUN chmod +rx /code/tests.html
+
+ENV PATH="/code:$PATH"
 
 EXPOSE 8000
 
 CMD ["python3", "-m", "http.server", "8000"]
 
-# 
