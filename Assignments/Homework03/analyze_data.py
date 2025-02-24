@@ -34,8 +34,8 @@ def net_profit(data):
 
     for movie in data:
         try:
-            gross = movie.get('grossWorldwide', 0)
-            budget = movie.get('budget', 0)
+            gross = float(movie.get('grossWorldWide', 0))
+            budget = float(movie.get('budget', 0))
 
             # Ensure gross and budget are converted to integers, handling floats and strings
             gross = int(float(str(gross).replace(',', '')))
@@ -43,16 +43,16 @@ def net_profit(data):
 
             # Skip movies with missing or invalid data
             if gross == 0 or budget == 0:
-                print(f"Skipping movie {movie.get('title', 'Unknown')} due to missing or zero values. Gross: {gross}, Budget: {budget}")
+                print(f"Skipping movie {movie.get('Title', 'Unknown')} due to missing or zero values. Gross: {gross}, Budget: {budget}")
                 continue
 
             profit = gross - budget
             if profit > max_profit:
                 max_profit = profit
-                max_profit_movie = movie.get('title', 'Unknown')
+                max_profit_movie = movie.get('Title', 'Unknown')
 
         except ValueError:
-            print(f"Skipping movie {movie.get('title', 'Unknown')} due to invalid number format. Gross: {gross}, Budget: {budget}")
+            print(f"Skipping movie {movie.get('Title', 'Unknown')} due to invalid number format. Gross: {gross}, Budget: {budget}")
 
     return max_profit_movie
 
