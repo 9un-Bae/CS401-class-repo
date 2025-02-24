@@ -22,7 +22,6 @@ def read_json(file_path: str):
         sys.exit(1)
 
 def net_profit(data):
-    # TODO: movie with the largest net profit of the past 5 years
     """
     Desc: Finds the movie with the highest net profit
     Args: Data (list): List of movie dictionaries
@@ -34,16 +33,21 @@ def net_profit(data):
 
     for movie in data:
         try:
-            gross = float(movie.get('grossWorldWide', 0))
-            budget = float(movie.get('budget', 0))
+            gross = movie.get('grossWorldWide')
+            budget = movie.get('budget')
 
-            # Ensure gross and budget are converted to integers, handling floats and strings
-            gross = int(float(str(gross).replace(',', '')))
-            budget = int(float(str(budget).replace(',', '')))
+            # Ensure values exist and are valid numbers
+            if gross is None or budget is None:
+                print(f"Skipping {movie.get('Title', 'Unknown')} due to missing data. Gross: {gross}, Budget: {budget}")
+                continue
 
-            # Skip movies with missing or invalid data
-            if gross == 0 or budget == 0:
-                print(f"Skipping movie {movie.get('Title', 'Unknown')} due to missing or zero values. Gross: {gross}, Budget: {budget}")
+            # Convert to float (ensure it's not a string)
+            gross = float(gross)
+            budget = float(budget)
+
+            # Ensure gross and budget are positive numbers
+            if gross <= 0 or budget <= 0:
+                print(f"Skipping {movie.get('Title', 'Unknown')} due to non-positive values. Gross: {gross}, Budget: {budget}")
                 continue
 
             profit = gross - budget
@@ -51,10 +55,11 @@ def net_profit(data):
                 max_profit = profit
                 max_profit_movie = movie.get('Title', 'Unknown')
 
-        except ValueError:
-            print(f"Skipping movie {movie.get('Title', 'Unknown')} due to invalid number format. Gross: {gross}, Budget: {budget}")
+        except (ValueError, TypeError) as e:
+            print(f"Skipping {movie.get('Title', 'Unknown')} due to error: {e}")
 
     return max_profit_movie
+
 
 # TODO: add second function to print out interesting statistics about the data
 def most_common_genre(data):
