@@ -24,8 +24,8 @@ def read_json(file_path: str):
 def net_profit(data):
     """
     Desc: Finds the movie with the highest net profit
-    Args: Data (list): List of movie dictionaries
-    Returns: The title of the movie with the highest net profit
+    Args: Data (List[Dict]): List of movie dictionaries
+    Returns: Dict[str, Union[str, float]]: Dictionary with the movie title as the key and the highest net profit as the value
     """
 
     max_profit = float('-inf')  # Start with the smallest possible number
@@ -33,40 +33,29 @@ def net_profit(data):
 
     for movie in data:
         try:
-            gross = movie.get('grossWorldWide')
-            budget = movie.get('budget')
-
             # Ensure values exist and are valid numbers
-            if gross is None or budget is None:
-                print(f"Skipping {movie.get('Title', 'Unknown')} due to missing data. Gross: {gross}, Budget: {budget}")
+            if not movie["grossWorldWide"] or not movie["budget"]:
                 continue
 
-            # Convert to float (ensure it's not a string)
-            gross = float(gross)
-            budget = float(budget)
-
-            # Ensure gross and budget are positive numbers
-            if gross <= 0 or budget <= 0:
-                print(f"Skipping {movie.get('Title', 'Unknown')} due to non-positive values. Gross: {gross}, Budget: {budget}")
-                continue
-
-            profit = gross - budget
+            profit = movie["grossWorldWide"] - movie["budget"]
             if profit > max_profit:
                 max_profit = profit
-                max_profit_movie = movie.get('Title', 'Unknown')
+                max_profit_movie = movie['Title']
 
-        except (ValueError, TypeError) as e:
-            print(f"Skipping {movie.get('Title', 'Unknown')} due to error: {e}")
+        except KeyError as e:
+            logging.warning(f"Missing key in movie data: {e}")
+        except TypeError:
+            logging.warning("Invalid type")
 
-    return max_profit_movie
+    return {max_profit_movie : max_profit} 
 
 
 # TODO: add second function to print out interesting statistics about the data
 def most_common_genre(data):
     """
     Desc: Determines the most common genre among movies
-    Args: Data (list): List of movie dictionaries
-    Returns: The most frequently occurring genre
+    Args: Data (List[Dict]): List of movie dictionaries
+    Returns: str: The most frequently occurring genre
     """
 
     genres = []
@@ -85,26 +74,27 @@ def most_common_genre(data):
 def top_director_by_rating(data):
     """
     Desc: Finds the director with the highest average movie rating
-    Args: Data (list): List of movie dictionaries
-    Returns: The director with the highest average rating
+    Args: Data (List[Dict]): List of movie dictionaries
+    Returns: Tuple[List[str], float]: tuple containing a list of top directors and their best rating
     """
+
+    best_rating = 0.0
+    directors = []
 
     director_ratings = {}
     for movie in data:
-        if 'director' in movie and 'rating' in movie:
-            if movie['director'] in director_ratings:
-                director_ratings[movie['director']].append(movie['rating'])
-            else:
-                director_ratings[movie['director']] = [movie['rating']]
-    avg_ratings = {director: sum(ratings) / len(ratings) for director, ratings in director_ratings.items()}
-    best_director = max(avg_ratings, key=avg_ratings.get, default="Unknown")
-    return best_director
+        if movie['directors'] and movie['Rating']:
+            if movie['Rating'] > best_rating:
+                best_rating = movie['Rating']
+                directors = movie['directors']
+    
+    return directors, best_rating
 
 def main():
 
     if len(sys.argv) < 2:
         print("Error: No command line argument provided. Please provide a file name for a json file to read. i.e. python analyze_data.py data.json")
-        sys.exit(1)  # Exit with a non-zero status code to indicate an error
+        sys.exit(1)    # Exit with a non-zero status code to indicate an error
 
     # Access the command line argument
     output_file = sys.argv[1]
@@ -122,7 +112,7 @@ def main():
 
     # TODO: third function to return and print out result
     best_director = top_director_by_rating(data)
-    print(f'Top director by average rating: {best_director}')
+    print(f'Top director by rating: {best_director}')
 
 if __name__ == '__main__':
     main()
