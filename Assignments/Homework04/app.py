@@ -50,22 +50,20 @@ def movie_range():
 
     if start is None or end is None:
         return jsonify({"error": "Invalid year range provided."}), 400
-    
-    result = [movie for movie in data if movie.get('release_year') and start <= movie['release_year'] <= end]
+
+    result = [movie for movie in data if movie['Year'] and start <= movie['Year'] <= end]
 
     return jsonify(result) if result else jsonify({"error": "No movies found in the specified range."}), 200
 
 
 # TODO: Add a route to return a movie if it matches the id
-@app.route('/movies-id', methods=['GET'])
+@app.route('/movies/<int:movie_id>', methods=['GET'])
 def movie_id(movie_id: int):
     """
     Return a movie matching the provided movie ID
     Returns - Dict: movie ID or an error message
     """
     logging.debug("Fetching movie by ID.")
-
-    movie_id = request.args.get('movie_id', type=int)
     
     data = get_data()
 
@@ -94,7 +92,7 @@ def movie_genres(movie_id: int):
     return jsonify({"error": f"Movie with ID {movie_id} not found"}), 404
 
 # TODO: Add a route to return a movie if it matches the title
-@app.route('/movies/title')
+@app.route('/movies/mpa')
 def movie_mpa():
     """
     Return a movie that matches the provided rating
@@ -103,11 +101,10 @@ def movie_mpa():
     logging.debug("Fetching movies by MPA rating.")
     
     movie_mpa = request.args.get('movie_mpa', type=str)
-    
+
     data = get_data()
     
-    results = [movie for movie in data if movie.get("MPA") == movie_mpa]
-
+    results = [movie for movie in data if movie["MPA"] == movie_mpa]
     return jsonify(results) if results else jsonify({"error": f"No movies found with MPA rating '{movie_mpa}'"}), 200
 
 # the next statement should usually appear at the bottom of a flask app
